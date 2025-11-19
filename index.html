@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARABY Admin Panel - Full Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: #2563eb;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+    .section {
+      margin-bottom: 35px;
+      padding: 25px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border-left: 4px solid #2563eb;
+    }
+    .section h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .btn-create {
+      background: #8b5cf6;
+      color: white;
+    }
+    .btn-disable {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-enable {
+      background: #22c55e;
+      color: white;
+    }
+    .btn-reset {
+      background: #f59e0b;
+      color: white;
+    }
+    .result {
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: none;
+    }
+    .result.success {
+      background: #dcfce7;
+      color: #15803d;
+      border-left: 4px solid #22c55e;
+      display: block;
+    }
+    .result.error {
+      background: #fee2e2;
+      color: #dc2626;
+      border-left: 4px solid #ef4444;
+      display: block;
+    }
+    .info-box {
+      background: #dbeafe;
+      border: 1px solid #3b82f6;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 30px;
+      font-size: 13px;
+      color: #1e40af;
+    }
+    .license-preview {
+      background: #f3f4f6;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 ARABY Admin Panel</h1>
+      <div class="subtitle">Complete License Management System</div>
+    </div>
+    
+    <div class="info-box">
+      <strong>📋 Admin Password:</strong> ARABYAdmin2025!Secret
+    </div>
+
+    <!-- CREATE NEW LICENSE -->
+    <div class="section">
+      <h3>➕ Create New License</h3>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="createPassword" placeholder="Enter admin password">
+      </div>
+      
+      <div class="form-group">
+        <label>Customer Email</label>
+        <input type="email" id="createEmail" placeholder="customer@email.com">
+      </div>
+      
+      <div class="form-group">
+        <label>Expiration Date</label>
+        <input type="date" id="createExpires">
+      </div>
+      
+      <div class="form-group">
+        <label>Country</label>
+        <select id="createCountry">
+          <option value="both">Both (Germany & France)</option>
+          <option value="germany">Germany Only</option>
+          <option value="france">France Only</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>License Key (or auto-generate)</label>
+        <input type="text" id="createLicense" placeholder="Leave empty to auto-generate" style="text-transform: uppercase;">
+        <button onclick="generateLicenseKey()" style="margin-top: 10px; background: #6b7280; color: white;">
+          🎲 Generate Random Key
+        </button>
+      </div>
+      
+      <div class="license-preview" id="licensePreview"></div>
+      
+      <button class="btn-create" onclick="createLicense()">
+        ➕ Create License
+      </button>
+      <div class="result" id="createResult"></div>
+    </div>
+
+    <!-- DISABLE LICENSE -->
+    <div class="section">
+      <h3>🔒 Disable License</h3>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="disablePassword" placeholder="Enter admin password">
+      </div>
+      
+      <div class="form-group">
+        <label>License Key</label>
+        <input type="text" id="disableLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+      </div>
+      
+      <button class="btn-disable" onclick="disableLicense()">
+        🔒 Disable License
+      </button>
+      <div class="result" id="disableResult"></div>
+    </div>
+    
+    <!-- ENABLE LICENSE -->
+    <div class="section">
+      <h3>✅ Enable License</h3>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="enablePassword" placeholder="Enter admin password">
+      </div>
+      
+      <div class="form-group">
+        <label>License Key</label>
+        <input type="text" id="enableLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+      </div>
+      
+      <button class="btn-enable" onclick="enableLicense()">
+        ✅ Enable License
+      </button>
+      <div class="result" id="enableResult"></div>
+    </div>
+    
+    <!-- RESET DEVICE -->
+    <div class="section">
+      <h3>🔄 Reset Device Lock</h3>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="resetPassword" placeholder="Enter admin password">
+      </div>
+      
+      <div class="form-group">
+        <label>License Key</label>
+        <input type="text" id="resetLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+      </div>
+      
+      <button class="btn-reset" onclick="resetDevice()">
+        🔄 Reset Device
+      </button>
+      <div class="result" id="resetResult"></div>
+    </div>
+  </div>
+
+  <script>
+    const SERVER_URL = 'https://araby-visa-server.vercel.app';
+
+    // Auto-uppercase license keys
+    ['createLicense', 'disableLicense', 'enableLicense', 'resetLicense'].forEach(id => {
+      document.getElementById(id).addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+      });
+    });
+
+    // Set default expiration date (1 year from now)
+    const expiresInput = document.getElementById('createExpires');
+    const nextYear = new Date();
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    expiresInput.value = nextYear.toISOString().split('T')[0];
+
+    // Generate random license key
+    function generateLicenseKey() {
+      const country = document.getElementById('createCountry').value;
+      const prefix = country === 'both' ? 'ARABY-PREMIUM' : 
+                     country === 'germany' ? 'ARABY-DE' : 'ARABY-FR';
+      const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const key = `${prefix}-${random}`;
+      
+      document.getElementById('createLicense').value = key;
+      
+      const preview = document.getElementById('licensePreview');
+      preview.textContent = `Generated: ${key}`;
+      preview.style.display = 'block';
+    }
+
+    // Create new license
+    async function createLicense() {
+      const password = document.getElementById('createPassword').value.trim();
+      const email = document.getElementById('createEmail').value.trim();
+      const expires = document.getElementById('createExpires').value;
+      const country = document.getElementById('createCountry').value;
+      let license = document.getElementById('createLicense').value.trim().toUpperCase();
+      const resultDiv = document.getElementById('createResult');
+      
+      if (!password || !email || !expires) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Please fill all required fields';
+        return;
+      }
+      
+      // Auto-generate if empty
+      if (!license) {
+        const prefix = country === 'both' ? 'ARABY-PREMIUM' : 
+                       country === 'germany' ? 'ARABY-DE' : 'ARABY-FR';
+        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+        license = `${prefix}-${random}`;
+        document.getElementById('createLicense').value = license;
+      }
+      
+      resultDiv.className = 'result';
+      resultDiv.textContent = '🔄 Creating license...';
+      resultDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch(SERVER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'addLicense',
+            adminPassword: password,
+            licenseKey: license,
+            email: email,
+            expires: expires,
+            country: country
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = `✅ License created successfully!\n\nKey: ${license}\nEmail: ${email}\nExpires: ${expires}\nCountry: ${country}`;
+          
+          // Clear form
+          document.getElementById('createEmail').value = '';
+          document.getElementById('createLicense').value = '';
+          document.getElementById('licensePreview').style.display = 'none';
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = '❌ ' + data.error;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Server error: ' + error.message;
+      }
+    }
+
+    async function disableLicense() {
+      const password = document.getElementById('disablePassword').value.trim();
+      const license = document.getElementById('disableLicense').value.trim().toUpperCase();
+      const resultDiv = document.getElementById('disableResult');
+      
+      if (!password || !license) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Please fill all fields';
+        return;
+      }
+      
+      resultDiv.className = 'result';
+      resultDiv.textContent = '🔄 Processing...';
+      resultDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch(SERVER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'disableUser',
+            adminPassword: password,
+            licenseKey: license
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = '✅ ' + data.message;
+          document.getElementById('disablePassword').value = '';
+          document.getElementById('disableLicense').value = '';
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = '❌ ' + data.error;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Server error: ' + error.message;
+      }
+    }
+
+    async function enableLicense() {
+      const password = document.getElementById('enablePassword').value.trim();
+      const license = document.getElementById('enableLicense').value.trim().toUpperCase();
+      const resultDiv = document.getElementById('enableResult');
+      
+      if (!password || !license) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Please fill all fields';
+        return;
+      }
+      
+      resultDiv.className = 'result';
+      resultDiv.textContent = '🔄 Processing...';
+      resultDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch(SERVER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'enableUser',
+            adminPassword: password,
+            licenseKey: license
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = '✅ ' + data.message;
+          document.getElementById('enablePassword').value = '';
+          document.getElementById('enableLicense').value = '';
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = '❌ ' + data.error;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Server error: ' + error.message;
+      }
+    }
+
+    async function resetDevice() {
+      const password = document.getElementById('resetPassword').value.trim();
+      const license = document.getElementById('resetLicense').value.trim().toUpperCase();
+      const resultDiv = document.getElementById('resetResult');
+      
+      if (!password || !license) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Please fill all fields';
+        return;
+      }
+      
+      resultDiv.className = 'result';
+      resultDiv.textContent = '🔄 Processing...';
+      resultDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch(SERVER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'resetDevice',
+            adminPassword: password,
+            licenseKey: license
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = '✅ ' + data.message;
+          document.getElementById('resetPassword').value = '';
+          document.getElementById('resetLicense').value = '';
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = '❌ ' + data.error;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Server error: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
