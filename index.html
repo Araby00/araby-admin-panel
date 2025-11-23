@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ARABY Admin Panel - Full Management</title>
+  <title>VFS Bot Admin Panel - Full Management</title>
   <style>
     * {
       margin: 0;
@@ -142,12 +142,12 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>🔧 ARABY Admin Panel</h1>
-      <div class="subtitle">Complete License Management System</div>
+      <h1>🌍 VFS Bot Admin Panel</h1>
+      <div class="subtitle">Netherlands & Portugal License Management</div>
     </div>
     
     <div class="info-box">
-      <strong>📋 Admin Password:</strong> ARABYAdmin2025!Secret
+      <strong>🔐 Admin Password:</strong> VFSAdmin2025!Secret
     </div>
 
     <!-- CREATE NEW LICENSE -->
@@ -171,9 +171,9 @@
       <div class="form-group">
         <label>Country</label>
         <select id="createCountry">
-          <option value="both">Both (Germany & France)</option>
-          <option value="germany">Germany Only</option>
-          <option value="france">France Only</option>
+          <option value="both">🇳🇱🇵🇹 Both (Netherlands & Portugal)</option>
+          <option value="netherlands">🇳🇱 Netherlands Only</option>
+          <option value="portugal">🇵🇹 Portugal Only</option>
         </select>
       </div>
       
@@ -203,7 +203,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="disableLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+        <input type="text" id="disableLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-disable" onclick="disableLicense()">
@@ -222,7 +222,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="enableLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+        <input type="text" id="enableLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-enable" onclick="enableLicense()">
@@ -241,7 +241,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="resetLicense" placeholder="ARABY-DEMO-2025" style="text-transform: uppercase;">
+        <input type="text" id="resetLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-reset" onclick="resetDevice()">
@@ -252,7 +252,7 @@
   </div>
 
   <script>
-    const SERVER_URL = 'https://araby-visa-server.vercel.app';
+    const SERVER_URL = 'https://vfs-bot-server-seven.vercel.app';
 
     // Auto-uppercase license keys
     ['createLicense', 'disableLicense', 'enableLicense', 'resetLicense'].forEach(id => {
@@ -270,8 +270,8 @@
     // Generate random license key
     function generateLicenseKey() {
       const country = document.getElementById('createCountry').value;
-      const prefix = country === 'both' ? 'ARABY-PREMIUM' : 
-                     country === 'germany' ? 'ARABY-DE' : 'ARABY-FR';
+      const prefix = country === 'both' ? 'VFS-PREMIUM' : 
+                     country === 'netherlands' ? 'VFS-NLD' : 'VFS-PRT';
       const random = Math.random().toString(36).substring(2, 8).toUpperCase();
       const key = `${prefix}-${random}`;
       
@@ -299,8 +299,8 @@
       
       // Auto-generate if empty
       if (!license) {
-        const prefix = country === 'both' ? 'ARABY-PREMIUM' : 
-                       country === 'germany' ? 'ARABY-DE' : 'ARABY-FR';
+        const prefix = country === 'both' ? 'VFS-PREMIUM' : 
+                       country === 'netherlands' ? 'VFS-NLD' : 'VFS-PRT';
         const random = Math.random().toString(36).substring(2, 8).toUpperCase();
         license = `${prefix}-${random}`;
         document.getElementById('createLicense').value = license;
