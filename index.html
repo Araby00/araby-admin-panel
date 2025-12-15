@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VFS Bot Admin Panel - Full Management</title>
+  <title>VFS Bot Admin Panel - Global Management</title>
   <style>
     * {
       margin: 0;
@@ -143,7 +143,7 @@
   <div class="container">
     <div class="header">
       <h1>🌍 VFS Bot Admin Panel</h1>
-      <div class="subtitle">Netherlands & Portugal License Management</div>
+      <div class="subtitle">Global License Management - All Countries</div>
     </div>
     
     <div class="info-box">
@@ -169,11 +169,21 @@
       </div>
       
       <div class="form-group">
-        <label>Country</label>
+        <label>Country Access</label>
         <select id="createCountry">
-          <option value="both">🇳🇱🇵🇹 Both (Netherlands & Portugal)</option>
-          <option value="netherlands">🇳🇱 Netherlands Only</option>
-          <option value="portugal">🇵🇹 Portugal Only</option>
+          <option value="both">🌍 Global (All Countries)</option>
+          <option value="nld">🇳🇱 Netherlands Only</option>
+          <option value="prt">🇵🇹 Portugal Only</option>
+          <option value="egy">🇪🇬 Egypt Only</option>
+          <option value="mar">🇲🇦 Morocco Only</option>
+          <option value="tun">🇹🇳 Tunisia Only</option>
+          <option value="dza">🇩🇿 Algeria Only</option>
+          <option value="zaf">🇿🇦 South Africa Only</option>
+          <option value="are">🇦🇪 UAE Only</option>
+          <option value="sau">🇸🇦 Saudi Arabia Only</option>
+          <option value="pak">🇵🇰 Pakistan Only</option>
+          <option value="ind">🇮🇳 India Only</option>
+          <option value="chn">🇨🇳 China Only</option>
         </select>
       </div>
       
@@ -203,7 +213,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="disableLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
+        <input type="text" id="disableLicense" placeholder="VFS-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-disable" onclick="disableLicense()">
@@ -222,7 +232,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="enableLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
+        <input type="text" id="enableLicense" placeholder="VFS-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-enable" onclick="enableLicense()">
@@ -241,7 +251,7 @@
       
       <div class="form-group">
         <label>License Key</label>
-        <input type="text" id="resetLicense" placeholder="VFS-NLD-XXXXX" style="text-transform: uppercase;">
+        <input type="text" id="resetLicense" placeholder="VFS-XXXXX" style="text-transform: uppercase;">
       </div>
       
       <button class="btn-reset" onclick="resetDevice()">
@@ -267,11 +277,27 @@
     nextYear.setFullYear(nextYear.getFullYear() + 1);
     expiresInput.value = nextYear.toISOString().split('T')[0];
 
+    // Country code to name mapping
+    const countryNames = {
+      'both': 'GLOBAL',
+      'nld': 'NLD',
+      'prt': 'PRT',
+      'egy': 'EGY',
+      'mar': 'MAR',
+      'tun': 'TUN',
+      'dza': 'DZA',
+      'zaf': 'ZAF',
+      'are': 'ARE',
+      'sau': 'SAU',
+      'pak': 'PAK',
+      'ind': 'IND',
+      'chn': 'CHN'
+    };
+
     // Generate random license key
     function generateLicenseKey() {
       const country = document.getElementById('createCountry').value;
-      const prefix = country === 'both' ? 'VFS-PREMIUM' : 
-                     country === 'netherlands' ? 'VFS-NLD' : 'VFS-PRT';
+      const prefix = country === 'both' ? 'VFS-GLOBAL' : `VFS-${countryNames[country] || country.toUpperCase()}`;
       const random = Math.random().toString(36).substring(2, 8).toUpperCase();
       const key = `${prefix}-${random}`;
       
@@ -299,8 +325,7 @@
       
       // Auto-generate if empty
       if (!license) {
-        const prefix = country === 'both' ? 'VFS-PREMIUM' : 
-                       country === 'netherlands' ? 'VFS-NLD' : 'VFS-PRT';
+        const prefix = country === 'both' ? 'VFS-GLOBAL' : `VFS-${countryNames[country] || country.toUpperCase()}`;
         const random = Math.random().toString(36).substring(2, 8).toUpperCase();
         license = `${prefix}-${random}`;
         document.getElementById('createLicense').value = license;
