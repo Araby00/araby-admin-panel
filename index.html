@@ -100,6 +100,10 @@
       background: #f59e0b;
       color: white;
     }
+    .btn-extend {
+      background: #3b82f6;
+      color: white;
+    }
     .result {
       margin-top: 15px;
       padding: 14px;
@@ -203,6 +207,30 @@
       <div class="result" id="createResult"></div>
     </div>
 
+    <!-- EXTEND/UPDATE EXPIRATION DATE - NEW SECTION -->
+    <div class="section" style="border-left-color: #3b82f6;">
+      <h3>📅 Extend/Update Expiration Date</h3>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="extendPassword" placeholder="Enter admin password">
+      </div>
+      
+      <div class="form-group">
+        <label>License Key</label>
+        <input type="text" id="extendLicense" placeholder="VFS-XXXXX" style="text-transform: uppercase;">
+      </div>
+      
+      <div class="form-group">
+        <label>New Expiration Date</label>
+        <input type="date" id="extendExpires">
+      </div>
+      
+      <button class="btn-extend" onclick="extendExpiry()">
+        📅 Update Expiration Date
+      </button>
+      <div class="result" id="extendResult"></div>
+    </div>
+
     <!-- DISABLE LICENSE -->
     <div class="section">
       <h3>🔒 Disable License</h3>
@@ -265,7 +293,7 @@
     const SERVER_URL = 'https://vfs-bot-server-seven.vercel.app';
 
     // Auto-uppercase license keys
-    ['createLicense', 'disableLicense', 'enableLicense', 'resetLicense'].forEach(id => {
+    ['createLicense', 'disableLicense', 'enableLicense', 'resetLicense', 'extendLicense'].forEach(id => {
       document.getElementById(id).addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase();
       });
@@ -273,9 +301,11 @@
 
     // Set default expiration date (1 year from now)
     const expiresInput = document.getElementById('createExpires');
+    const extendExpiresInput = document.getElementById('extendExpires');
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
     expiresInput.value = nextYear.toISOString().split('T')[0];
+    extendExpiresInput.value = nextYear.toISOString().split('T')[0];
 
     // Country code to name mapping
     const countryNames = {
@@ -359,6 +389,54 @@
           document.getElementById('createEmail').value = '';
           document.getElementById('createLicense').value = '';
           document.getElementById('licensePreview').style.display = 'none';
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.textContent = '❌ ' + data.error;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Server error: ' + error.message;
+      }
+    }
+
+    // NEW: Extend/Update Expiration Date
+    async function extendExpiry() {
+      const password = document.getElementById('extendPassword').value.trim();
+      const license = document.getElementById('extendLicense').value.trim().toUpperCase();
+      const newExpires = document.getElementById('extendExpires').value;
+      const resultDiv = document.getElementById('extendResult');
+      
+      if (!password || !license || !newExpires) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '❌ Please fill all fields';
+        return;
+      }
+      
+      resultDiv.className = 'result';
+      resultDiv.textContent = '🔄 Updating expiration date...';
+      resultDiv.style.display = 'block';
+      
+      try {
+        const response = await fetch(SERVER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'extendExpiry',
+            adminPassword: password,
+            licenseKey: license,
+            newExpires: newExpires
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'result success';
+          resultDiv.textContent = `✅ ${data.message}\n\nLicense: ${license}\nNew Expiry: ${newExpires}`;
+          
+          // Clear form
+          document.getElementById('extendPassword').value = '';
+          document.getElementById('extendLicense').value = '';
         } else {
           resultDiv.className = 'result error';
           resultDiv.textContent = '❌ ' + data.error;
