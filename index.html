@@ -148,6 +148,28 @@
       .stats-grid { grid-template-columns:1fr 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+  <style>
+    .flatpickr-calendar { background:var(--card) !important; border:1px solid var(--border2) !important; box-shadow:0 8px 30px rgba(0,0,0,0.4) !important; border-radius:10px !important; font-family:var(--sans) !important; }
+    .flatpickr-day { color:var(--text) !important; border-radius:6px !important; }
+    .flatpickr-day:hover { background:rgba(79,110,247,0.2) !important; }
+    .flatpickr-day.selected { background:var(--accent) !important; border-color:var(--accent) !important; }
+    .flatpickr-day.today { border-color:var(--accent) !important; color:var(--accent) !important; }
+    .flatpickr-months { background:var(--surface) !important; border-radius:10px 10px 0 0 !important; padding:8px 0 !important; }
+    .flatpickr-month { color:var(--text) !important; }
+    .flatpickr-current-month { color:var(--text) !important; font-size:14px !important; }
+    .flatpickr-current-month select { color:var(--text) !important; background:var(--surface) !important; }
+    .flatpickr-current-month input.cur-year { color:var(--text) !important; }
+    .flatpickr-weekday { color:var(--muted) !important; background:var(--surface) !important; }
+    .flatpickr-weekdays { background:var(--surface) !important; }
+    .flatpickr-prev-month, .flatpickr-next-month { color:var(--muted) !important; fill:var(--muted) !important; }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) !important; cursor:pointer; }
+    .flatpickr-prev-month:hover, .flatpickr-next-month:hover { color:var(--accent) !important; fill:var(--accent) !important; }
+    .flatpickr-day.flatpickr-disabled { color:var(--muted) !important; opacity:0.4 !important; }
+    .numInputWrapper span { border-color:var(--border2) !important; }
+    .numInputWrapper span svg path { fill:var(--muted) !important; }
+  </style>
 </head>
 <body>
 
@@ -380,8 +402,9 @@
     else { document.getElementById('pwModal').style.display = 'none'; loadStats(); }
     const nextYear = new Date(); nextYear.setFullYear(nextYear.getFullYear() + 1);
     const d = nextYear.toISOString().split('T')[0];
-    document.getElementById('createExpires').value = d;
-    document.getElementById('extendExpires').value = d;
+    const fpConfig = { dateFormat: "Y-m-d", defaultDate: d, minDate: "today", disableMobile: false, theme: "dark" };
+    flatpickr("#createExpires", fpConfig);
+    flatpickr("#extendExpires", fpConfig);
   });
 
   function showPage(name, el) {
