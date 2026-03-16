@@ -214,7 +214,10 @@
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search by email or license key...">
         <button class="btn-primary" onclick="searchLicenses()">🔍 Search</button>
-        <button class="btn-ghost" onclick="loadAllLicenses()">🔄 Load All</button>
+        <button class="btn-ghost" onclick="loadAllLicenses()">🔄 All</button>
+        <button class="filter-btn btn-ghost" id="filter-active" onclick="filterLicenses('active')">🟢 Active</button>
+        <button class="filter-btn btn-ghost" id="filter-disabled" onclick="filterLicenses('disabled')">🔴 Disabled</button>
+        <button class="filter-btn btn-ghost" id="filter-expired" onclick="filterLicenses('expired')">🟡 Expired</button>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -441,12 +444,13 @@
   }
 
   // LOAD ALL LICENSES
+  let allLicensesCache = [];
   async function loadAllLicenses() {
     document.getElementById('licensesTable').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Loading...</td></tr>';
     try {
       const data = await api({ action: 'listLicenses' });
       if (!data.success) { document.getElementById('licensesTable').innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:20px">${data.error}</td></tr>`; return; }
-      renderLicenseTable(data.licenses);
+      allLicensesCache = data.licenses; renderLicenseTable(data.licenses); clearFilterHighlight();
     } catch(e) {
       document.getElementById('licensesTable').innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:20px">Network error</td></tr>`;
     }
@@ -465,6 +469,23 @@
   }
 
   document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchLicenses(); });
+
+  function filterLicenses(type) {
+    if (allLicensesCache.length === 0) { loadAllLicenses(); return; }
+    const today = new Date();
+    let filtered;
+    if (type === 'active')   filtered = allLicensesCache.filter(l => l.active && new Date(l.expires) >= today);
+    if (type === 'disabled') filtered = allLicensesCache.filter(l => !l.active);
+    if (type === 'expired')  filtered = allLicensesCache.filter(l => new Date(l.expires) < today);
+    document.querySelectorAll('.filter-btn').forEach(b => b.style.outline = 'none');
+    const activeBtn = document.getElementById('filter-' + type);
+    if (activeBtn) activeBtn.style.outline = '2px solid var(--accent)';
+    renderLicenseTable(filtered);
+  }
+
+  function clearFilterHighlight() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.style.outline = 'none');
+  }
 
   function renderLicenseTable(licenses) {
     if (licenses.length === 0) {
